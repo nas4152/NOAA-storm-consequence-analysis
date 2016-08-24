@@ -2,11 +2,42 @@
 
 ##Data Processing
 
-Download file
+Download file, format date time
 ```{r, cache = TRUE}
 url1 <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 if(!file.exists("stormdata.csv.bz2")){download.file(url1, "stormdata.csv.bz2")}
 stormdata <- read.csv("stormdata.csv.bz2")
+url2 <- "https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf"
+if(!file.exists("info.pdf")){download.file(url2,"info.pdf")}
+```
+
+```{r format, cache=TRUE}
+stormdata$BGN_DATE <- strptime(stormdata$BGN_DATE, "%m/%d/%Y %H:%M:%S")
+year <- stormdata$BGN_DATE
+year <- year$year
+stormdata$year <- year + 1900
+```
+
+Processing
+```{r processing, cache=FALSE}
+library(dplyr)
+dmgdata <- select(stormdata, year, STATE, EVTYPE, INJURIES, FATALITIES,
+                   PROPDMG, CROPDMG)
 ```
 
 ##Results
+
+```{r, cache=FALSE}
+ymedian <- median(dmgdata$year)
+dmgdata <- filter(dmgdata, year >= ymedian)
+```
+The full dataset includes entries from the years 1950 - 2011.  However, the 
+median year is `r ymedian`.  This indicates that half of the data falls within
+the last decade of six.  The analysis focuses on the data collected from the 
+median year and later to limit the effect of increased record collection over
+time.
+
+```{r plot1, cache=FALSE}
+library(ggplot2)
+
+```

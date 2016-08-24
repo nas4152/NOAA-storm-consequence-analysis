@@ -122,13 +122,35 @@ $(document).ready(function () {
 <h1>Public Health and Economic Consequences of Storms</h1>
 <div id="data-processing" class="section level2">
 <h2>Data Processing</h2>
-<p>Download file</p>
+<p>Download file, format date time</p>
 <pre class="r"><code>url1 &lt;- &quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2&quot;
 if(!file.exists(&quot;stormdata.csv.bz2&quot;)){download.file(url1, &quot;stormdata.csv.bz2&quot;)}
-stormdata &lt;- read.csv(&quot;stormdata.csv.bz2&quot;)</code></pre>
+stormdata &lt;- read.csv(&quot;stormdata.csv.bz2&quot;)
+url2 &lt;- &quot;https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf&quot;
+if(!file.exists(&quot;info.pdf&quot;)){download.file(url2,&quot;info.pdf&quot;)}</code></pre>
+<pre class="r"><code>stormdata$BGN_DATE &lt;- strptime(stormdata$BGN_DATE, &quot;%m/%d/%Y %H:%M:%S&quot;)
+year &lt;- stormdata$BGN_DATE
+year &lt;- year$year
+stormdata$year &lt;- year + 1900</code></pre>
+<p>Processing</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>dmgdata &lt;- select(stormdata, year, STATE, EVTYPE, INJURIES, FATALITIES,
+                   PROPDMG, CROPDMG)</code></pre>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
+<pre class="r"><code>ymedian &lt;- median(dmgdata$year)
+dmgdata &lt;- filter(dmgdata, year &gt;= ymedian)</code></pre>
+<p>The full dataset includes entries from the years 1950 - 2011. However, the median year is 2002. This indicates that half of the data falls within the last decade of six. The analysis focuses on the data collected from the median year and later to limit the effect of increased record collection over time.</p>
+<pre class="r"><code>library(ggplot2)</code></pre>
 </div>
 </div>
 
