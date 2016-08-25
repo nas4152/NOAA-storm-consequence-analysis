@@ -23,6 +23,10 @@ Processing
 library(dplyr)
 dmgdata <- select(stormdata, year, STATE, EVTYPE, INJURIES, FATALITIES,
                    PROPDMG, CROPDMG)
+tstmwind <- unique(grep("TSTM", dmgdata$EVTYPE, value = TRUE))
+tstmwind <- tstmwind[tstmwind != 'NON-TSTM WIND' & tstmwind != 'NON TSTM WIND'
+                     & tstmwind != "TORNADOES, TSTM WIND, HAIL"]
+dmgdata$EVTYPE[dmgdata$EVTYPE %in% tstmwind] <- 'THUNDERSTORM WIND'
 ```
 In order to determine the most damageing storm types in regard to public health
 and property damage, data for injuries, fatalities, property and crop damage 
@@ -69,25 +73,46 @@ mean for each value were stored.
 
 *Highest Injuries*
 ```{r, cache=FALSE}
-c(lapply(topinj, as.character))
+c(sapply(topinj, as.character))
 ```
 
 *Highest Fatalities*
 ```{r, cache=FALSE}
-c(lapply(topftl, as.character))
+c(sapply(topftl, as.character))
 ```
 
 *Highest Property Damage*
 ```{r, cache=FALSE}
-c(lapply(topprop, as.character))
+c(sapply(topprop, as.character))
 ```
 
 *Highest Crop Damage*
 ```{r, cache=FALSE}
-c(lapply(topcrop, as.character))
+c(sapply(topcrop, as.character))
 ```
 
-```{r plot1, cache=FALSE}
-library(ggplot2)
+###Yearly damage to Public Health
 
+```{r health data, cache=FALSE}
+inj <- filter(dmgsum, EVTYPE %in% c(sapply(topinj, as.character)))
+fat <- filter(dmgsum, EVTYPE %in% c(sapply(topftl, as.character)))
+```
+
+
+```{r health plot, cache=FALSE}
+library(ggplot2)
+library(gridExtra)
+par(mfrow = c(1,2))
+Injuries <- ggplot(inj, aes(x= year, y = INJURIES, col = EVTYPE)) +
+        geom_line() +
+        coord_cartesian(ylim = c(0,2000))+
+        ylab("Total Injuries") +
+        xlab("Year")
+Fatalities <- ggplot(fat, aes(x= year, y = FATALITIES, col = EVTYPE)) +
+        geom_line() +
+        coord_cartesian(ylim = c(0,250))+
+        ylab("Total Fatalities") +
+        xlab("Year")
+        
+grid.arrange(Injuries, Fatalities, ncol = 1)
 ```
