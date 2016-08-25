@@ -11,3 +11,8 @@ colnames(stormdata)
 [25] "PROPDMG"    "PROPDMGEXP" "CROPDMG"    "CROPDMGEXP" "WFO"        "STATEOFFIC"
 [31] "ZONENAMES"  "LATITUDE"   "LONGITUDE"  "LATITUDE_E" "LONGITUDE_" "REMARKS"   
 [37] "REFNUM"    
+
+cast/melt (reshape2 package) -> totals by year, type (check by state?)
+
+top 5 of each, year totals (no seasonal bias), line over time, type by color
+double plot for each parameter for health and economic

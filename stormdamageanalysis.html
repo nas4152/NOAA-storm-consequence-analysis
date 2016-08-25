@@ -144,13 +144,49 @@ stormdata$year &lt;- year + 1900</code></pre>
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>dmgdata &lt;- select(stormdata, year, STATE, EVTYPE, INJURIES, FATALITIES,
                    PROPDMG, CROPDMG)</code></pre>
-</div>
-<div id="results" class="section level2">
-<h2>Results</h2>
+<p>In order to determine the most damageing storm types in regard to public health and property damage, data for injuries, fatalities, property and crop damage were selected. Data was analyzed looking at the whole year to limit effects of seasonal change and determine overall impact so only the year of the event was kept for analysis. This analysis focuses on the impact across the US, however state designation was kept in the rearranged dataset as it may be useful in further analysis for more focused policy decisions.</p>
 <pre class="r"><code>ymedian &lt;- median(dmgdata$year)
 dmgdata &lt;- filter(dmgdata, year &gt;= ymedian)</code></pre>
 <p>The full dataset includes entries from the years 1950 - 2011. However, the median year is 2002. This indicates that half of the data falls within the last decade of six. The analysis focuses on the data collected from the median year and later to limit the effect of increased record collection over time.</p>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
+<div id="ranking-storms-by-damage-parameters" class="section level3">
+<h3>Ranking Storms by Damage Parameters</h3>
+<pre class="r"><code>library(reshape2)
+dmgmelt &lt;- melt(dmgdata, id.vars = c(&quot;year&quot;,&quot;STATE&quot;, &quot;EVTYPE&quot;))
+dmgsum &lt;- dcast(dmgmelt, year + EVTYPE ~ variable, sum)</code></pre>
+<p>First yearly sums were calculated for each storm type.</p>
+<pre class="r"><code>meandmg &lt;- summarise(group_by(dmgsum, EVTYPE), injury = mean(INJURIES), 
+                   fatality = mean(FATALITIES), prop = mean(PROPDMG), 
+                   crop = mean(CROPDMG))
+topinj &lt;- arrange(meandmg, desc(injury))[1:5,1]
+topftl &lt;- arrange(meandmg, desc(fatality))[1:5,1]
+topprop &lt;- arrange(meandmg, desc(prop))[1:5,1]
+topcrop &lt;- arrange(meandmg, desc(crop))[1:5,1]</code></pre>
+<p>In order to determine the most damaging storm types, the yearly sums were averaged across the data for each parameter. The storm types with the highest mean for each value were stored.</p>
+<p><em>Highest Injuries</em></p>
+<pre class="r"><code>c(lapply(topinj, as.character))</code></pre>
+<pre><code>## $EVTYPE
+## [1] &quot;TORNADO&quot;           &quot;HURRICANE/TYPHOON&quot; &quot;EXCESSIVE HEAT&quot;   
+## [4] &quot;THUNDERSTORM WIND&quot; &quot;TSTM WIND&quot;</code></pre>
+<p><em>Highest Fatalities</em></p>
+<pre class="r"><code>c(lapply(topftl, as.character))</code></pre>
+<pre><code>## $EVTYPE
+## [1] &quot;TORNADO&quot;        &quot;EXCESSIVE HEAT&quot; &quot;FLASH FLOOD&quot;    &quot;HEAT&quot;          
+## [5] &quot;LIGHTNING&quot;</code></pre>
+<p><em>Highest Property Damage</em></p>
+<pre class="r"><code>c(lapply(topprop, as.character))</code></pre>
+<pre><code>## $EVTYPE
+## [1] &quot;THUNDERSTORM WIND&quot; &quot;TSTM WIND&quot;         &quot;FLASH FLOOD&quot;      
+## [4] &quot;TORNADO&quot;           &quot;FLOOD&quot;</code></pre>
+<p><em>Highest Crop Damage</em></p>
+<pre class="r"><code>c(lapply(topcrop, as.character))</code></pre>
+<pre><code>## $EVTYPE
+## [1] &quot;HAIL&quot;              &quot;FLASH FLOOD&quot;       &quot;FLOOD&quot;            
+## [4] &quot;THUNDERSTORM WIND&quot; &quot;TORNADO&quot;</code></pre>
 <pre class="r"><code>library(ggplot2)</code></pre>
+</div>
 </div>
 </div>
 

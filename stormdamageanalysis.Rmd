@@ -24,8 +24,13 @@ library(dplyr)
 dmgdata <- select(stormdata, year, STATE, EVTYPE, INJURIES, FATALITIES,
                    PROPDMG, CROPDMG)
 ```
-
-##Results
+In order to determine the most damageing storm types in regard to public health
+and property damage, data for injuries, fatalities, property and crop damage 
+were selected.  Data was analyzed looking at the whole year to limit effects of 
+seasonal change and determine overall impact so only the year of the event was 
+kept for analysis.  This analysis focuses on the impact across the US, however
+state designation was kept in the rearranged dataset as it may be useful in 
+further analysis for more focused policy decisions.
 
 ```{r, cache=FALSE}
 ymedian <- median(dmgdata$year)
@@ -36,6 +41,51 @@ median year is `r ymedian`.  This indicates that half of the data falls within
 the last decade of six.  The analysis focuses on the data collected from the 
 median year and later to limit the effect of increased record collection over
 time.
+
+##Results
+
+###Ranking Storms by Damage Parameters
+
+```{r totals, cache=FALSE}
+library(reshape2)
+dmgmelt <- melt(dmgdata, id.vars = c("year","STATE", "EVTYPE"))
+dmgsum <- dcast(dmgmelt, year + EVTYPE ~ variable, sum)
+```
+First yearly sums were calculated for each storm type.  
+
+```{r top damage, cache=FALSE}
+meandmg <- summarise(group_by(dmgsum, EVTYPE), injury = mean(INJURIES), 
+                   fatality = mean(FATALITIES), prop = mean(PROPDMG), 
+                   crop = mean(CROPDMG))
+topinj <- arrange(meandmg, desc(injury))[1:5,1]
+topftl <- arrange(meandmg, desc(fatality))[1:5,1]
+topprop <- arrange(meandmg, desc(prop))[1:5,1]
+topcrop <- arrange(meandmg, desc(crop))[1:5,1]
+
+```
+In order to determine the most damaging storm types, the yearly sums were
+averaged across the data for each parameter.  The storm types with the highest 
+mean for each value were stored.
+
+*Highest Injuries*
+```{r, cache=FALSE}
+c(lapply(topinj, as.character))
+```
+
+*Highest Fatalities*
+```{r, cache=FALSE}
+c(lapply(topftl, as.character))
+```
+
+*Highest Property Damage*
+```{r, cache=FALSE}
+c(lapply(topprop, as.character))
+```
+
+*Highest Crop Damage*
+```{r, cache=FALSE}
+c(lapply(topcrop, as.character))
+```
 
 ```{r plot1, cache=FALSE}
 library(ggplot2)
