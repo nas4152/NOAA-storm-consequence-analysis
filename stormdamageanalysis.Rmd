@@ -27,6 +27,7 @@ tstmwind <- unique(grep("TSTM", dmgdata$EVTYPE, value = TRUE))
 tstmwind <- tstmwind[tstmwind != 'NON-TSTM WIND' & tstmwind != 'NON TSTM WIND'
                      & tstmwind != "TORNADOES, TSTM WIND, HAIL"]
 dmgdata$EVTYPE[dmgdata$EVTYPE %in% tstmwind] <- 'THUNDERSTORM WIND'
+dmgdata$EVTYPE[dmgdata$EVTYPE == 'HEAT'] <- 'EXCESSIVE HEAT'
 ```
 In order to determine the most damageing storm types in regard to public health
 and property damage, data for injuries, fatalities, property and crop damage 
@@ -102,17 +103,26 @@ fat <- filter(dmgsum, EVTYPE %in% c(sapply(topftl, as.character)))
 ```{r health plot, cache=FALSE}
 library(ggplot2)
 library(gridExtra)
-par(mfrow = c(1,2))
 Injuries <- ggplot(inj, aes(x= year, y = INJURIES, col = EVTYPE)) +
         geom_line() +
         coord_cartesian(ylim = c(0,2000))+
         ylab("Total Injuries") +
-        xlab("Year")
+        xlab("Year") + 
+        scale_color_manual(values = c("indianred", "darkgreen", "darkorange", 
+                "turquoise", "magenta"), name = "Storm Type", labels = 
+                c("Excessive Heat", "Hurricane/Typhoon*", "Lightning", 
+                "Thunderstorm Wind*", "Tornado"))
+       
 Fatalities <- ggplot(fat, aes(x= year, y = FATALITIES, col = EVTYPE)) +
         geom_line() +
         coord_cartesian(ylim = c(0,250))+
         ylab("Total Fatalities") +
-        xlab("Year")
+        xlab("Year") + 
+        scale_color_manual(values = c("indianred", "darkgoldenrod4", "darkorange", 
+                "blue3", "magenta"), name = "Storm Type", labels = 
+                c("Excessive Heat", "Flash Flood*", "Lightning", "Rip Current*", 
+                  "Tornado"))
+        
         
 grid.arrange(Injuries, Fatalities, ncol = 1)
 ```
