@@ -92,7 +92,7 @@ c(sapply(topprop, as.character))
 c(sapply(topcrop, as.character))
 ```
 
-###Yearly damage to Public Health
+###Yearly Public Health Consequences
 
 ```{r health data, cache=FALSE}
 inj <- filter(dmgsum, EVTYPE %in% c(sapply(topinj, as.character)))
@@ -107,7 +107,7 @@ Injuries <- ggplot(inj, aes(x= year, y = INJURIES, col = EVTYPE)) +
         geom_line() +
         coord_cartesian(ylim = c(0,2000))+
         ylab("Total Injuries") +
-        xlab("Year") + 
+        xlab("Year") +
         scale_color_manual(values = c("indianred", "darkgreen", "darkorange", 
                 "turquoise", "magenta"), name = "Storm Type", labels = 
                 c("Excessive Heat", "Hurricane/Typhoon*", "Lightning", 
@@ -124,5 +124,35 @@ Fatalities <- ggplot(fat, aes(x= year, y = FATALITIES, col = EVTYPE)) +
                   "Tornado"))
         
         
-grid.arrange(Injuries, Fatalities, ncol = 1)
+grid.arrange(Injuries, Fatalities, ncol = 1, 
+             top = "Yearly Total Public Health Consequences")
 ```
+
+###Yearly Economic Consequences
+
+
+```{r economic data, cache=FALSE}
+prop <- filter(dmgsum, EVTYPE %in% c(sapply(topprop, as.character)))
+crop <- filter(dmgsum, EVTYPE %in% c(sapply(topcrop, as.character)))
+```
+
+
+```{r economic plot, cache=FALSE}
+library(ggplot2)
+library(gridExtra)
+Property <- ggplot(prop, aes(x= year, y = PROPDMG, col = EVTYPE)) +
+        geom_line() +
+        ylab("Property Damage (US $)") +
+        xlab("Year") +
+        guides(color=guide_legend(title="Storm Type"))
+       
+Cropplot <- ggplot(crop, aes(x= year, y = CROPDMG, col = EVTYPE)) +
+        geom_line() +
+        ylab("Crop Damage (US $)") +
+        xlab("Year") +
+        guides(color=guide_legend(title="Storm Type"))
+        
+grid.arrange(Property, Cropplot, ncol = 1, 
+             top = "Yearly Total Economic Consequences")
+```
+
