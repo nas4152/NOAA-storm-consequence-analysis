@@ -1,6 +1,6 @@
 #Public Health and Economic Consequences of Storms
 
-##Abstract
+##Synopsis
 
 This analysis uses data from the NOAA storm database to investigate which types
 of weather events cause the greatest damage in terms of public health and 
