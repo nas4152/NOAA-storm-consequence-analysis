@@ -1,5 +1,23 @@
 #Public Health and Economic Consequences of Storms
 
+##Abstract
+
+This analysis uses data from the NOAA storm database to investigate which types
+of weather events cause the greatest damage in terms of public health and 
+economic losses.  Data form 2002 - 2011 was used as it was more complete than 
+earlier records.  Injury and fatality data were used to evaluate public health
+consequences, while crop and property damage figures were used for economic 
+losses.  Storms were ranked according to the mean yearly total in each category
+to determine the top 5 and these storms' yearly totals were plotted.  The 
+highest injuries were recorded for tornados, excessive heat, hurricanes/ 
+typhoons, thunderstorm wind and lightning.  The greatest number of fatalities 
+were caused by tornados, excessive heat, flash floods, lightning and rip 
+currents.  For both crop and property damage, the leading causes were flash 
+floods, floods, hail, thunderstorm wind, and tornados.  As thunderstorms and 
+tornados were consistently among the most damaging accross all parameters, 
+they should be considered highly damaging to both public health and economic
+factors.
+
 ##Data Processing
 
 Download file, format date time
@@ -35,7 +53,9 @@ were selected.  Data was analyzed looking at the whole year to limit effects of
 seasonal change and determine overall impact so only the year of the event was 
 kept for analysis.  This analysis focuses on the impact across the US, however
 state designation was kept in the rearranged dataset as it may be useful in 
-further analysis for more focused policy decisions.
+further analysis for more focused policy decisions.  Several factor levels
+that distinguished between different strengths of thunderstorm wind were 
+combined as the study aimed to rank general storm types.
 
 ```{r, cache=FALSE}
 ymedian <- median(dmgdata$year)
@@ -98,7 +118,8 @@ c(sapply(topcrop, as.character))
 inj <- filter(dmgsum, EVTYPE %in% c(sapply(topinj, as.character)))
 fat <- filter(dmgsum, EVTYPE %in% c(sapply(topftl, as.character)))
 ```
-
+Each yearly sum for injuries and fatalities was plotted to give greater detail
+as to how the storm rankings changed over the time period of analysis.
 
 ```{r health plot, cache=FALSE}
 library(ggplot2)
@@ -128,6 +149,13 @@ grid.arrange(Injuries, Fatalities, ncol = 1,
              top = "Yearly Total Public Health Consequences")
 ```
 
+Storms marked wth an * are different between the injury and fatality rankings.
+Beyond the storm types with the highest injury and fatality rates, the plot 
+shows that excessive heat and tornados appear to have greater swings in the 
+year to year impact on public health.  Tornado injury and fatality data for 
+2011 was cut off from the plot as an outlier to show greater detail, however
+the slope of the line was maintained.
+
 ###Yearly Economic Consequences
 
 
@@ -135,7 +163,8 @@ grid.arrange(Injuries, Fatalities, ncol = 1,
 prop <- filter(dmgsum, EVTYPE %in% c(sapply(topprop, as.character)))
 crop <- filter(dmgsum, EVTYPE %in% c(sapply(topcrop, as.character)))
 ```
-
+Each yearly sum for crop and property damage was plotted to give greater detail
+as to how the storm rankings changed over the time period of analysis.
 
 ```{r economic plot, cache=FALSE}
 library(ggplot2)
@@ -156,3 +185,9 @@ grid.arrange(Property, Cropplot, ncol = 1,
              top = "Yearly Total Economic Consequences")
 ```
 
+This plot shows crop and property damage over time.  Thunderstorm wind 
+consistently caused the most property damage across the time period analyzed, 
+while hail was generally the leader in crop damage.  Economic consequences
+appear to follow more consistent trends than injury and fatality data.  Also,
+crop damage peaked across all 5 causes in 2008, while property damage appears
+to have generally increased across the time of analysis.
